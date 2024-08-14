@@ -1,30 +1,34 @@
-use borsh::{BorshDeserialize, BorshSerialize};
+use borsh::BorshDeserialize;
 use solana_program::{
-    account_info::AccountInfo, entrypoint::ProgramResult, program_error::ProgramError,
+    account_info::AccountInfo, entrypoint::ProgramResult, msg, program_error::ProgramError,
     pubkey::Pubkey,
 };
+use std::io::Error;
 
-#[derive(BorshSerialize, BorshDeserialize, Debug)]
-pub enum TransferInstruction {
-    Initialize(),
-    DepositSol(u64),
-    WithdrawSol(),
-}
+use crate::{
+    instructions::{deposit, initialize, withdraw},
+    state::SolAccountInstruction,
+};
 
 pub fn process_instruction(
     _program_id: &Pubkey,
     _accounts: &[AccountInfo],
     instruction_data: &[u8],
 ) -> ProgramResult {
-    let instruction = TransferInstruction::try_from_slice(instruction_data);
+    let instruction: Result<SolAccountInstruction, Error> =
+        SolAccountInstruction::try_from_slice(instruction_data);
 
     match instruction {
-        Ok(TransferInstruction::Initialize()) => Ok(()),
+        Ok(SolAccountInstruction::Initialize()) => initialize(),
 
-        Ok(TransferInstruction::DepositSol(args)) => Ok(()),
+        Ok(SolAccountInstruction::DepositSol(amount)) => deposit(amount),
 
-        Ok(TransferInstruction::WithdrawSol()) => Ok(()),
+        Ok(SolAccountInstruction::WithdrawSol()) => withdraw(),
 
-        Err(err) => Err(ProgramError::InvalidInstructionData),
+        Err(err) => {
+            msg!("An error occured {}", err);
+
+            Err(ProgramError::InvalidInstructionData)
+        }
     }
 }
