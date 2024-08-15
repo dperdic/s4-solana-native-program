@@ -6,7 +6,7 @@ use solana_program::{
 use std::io::Error;
 
 use crate::{
-    instructions::{deposit, initialize, withdraw},
+    instructions::{deposit, withdraw},
     state::SolAccountInstruction,
 };
 
@@ -19,8 +19,6 @@ pub fn process_instruction(
         SolAccountInstruction::try_from_slice(instruction_data);
 
     match instruction {
-        Ok(SolAccountInstruction::Initialize()) => initialize(program_id, accounts),
-
         Ok(SolAccountInstruction::DepositSol(amount)) => deposit(program_id, accounts, amount),
 
         Ok(SolAccountInstruction::WithdrawSol()) => withdraw(program_id, accounts),
