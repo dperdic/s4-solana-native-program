@@ -19,6 +19,10 @@ pub fn deposit(program_id: &Pubkey, accounts: &[AccountInfo], amount: u64) -> Pr
     let sol_account: &AccountInfo = next_account_info(accounts_iter)?;
     let _system_program: &AccountInfo = next_account_info(accounts_iter)?;
 
+    if !user_account.is_signer {
+        return Err(ProgramError::MissingRequiredSignature);
+    }
+
     if sol_account.owner != program_id {
         return Err(ProgramError::IncorrectProgramId);
     }
