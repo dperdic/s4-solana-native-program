@@ -26,7 +26,7 @@ pub fn process_instruction(
         Ok(SolAccountInstruction::WithdrawSol()) => withdraw(),
 
         Err(err) => {
-            msg!("An error occured {}", err);
+            msg!("An error occured: {}", err);
 
             Err(ProgramError::InvalidInstructionData)
         }
