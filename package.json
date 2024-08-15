@@ -1,8 +1,9 @@
 {
   "scripts": {
-    "build": "",
-    "deploy": "",
-    "test": "mocha --recursive ./tests/*.ts"
+    "test": "mocha --recursive ./tests/*.ts",
+    "build-and-test": "cargo build-sbf --sbf-out-dir=./tests/fixtures && yarn test",
+    "build": "cargo build-sbf",
+    "deploy": "dotenv -- zsh -c 'solana program deploy --url $RPC_URL target/sbf-solana-solana/release/s4_solana_native_program.so'"
   },
   "dependencies": {
     "@solana/web3.js": "^1.95.2"
@@ -12,8 +13,10 @@
     "@types/chai": "^4.3.17",
     "@types/mocha": "^10.0.7",
     "chai": "^5.1.1",
+    "dotenv-cli": "^7.4.2",
     "mocha": "^10.7.3",
     "prettier": "^3.3.3",
+    "solana-bankrun": "^0.3.0",
     "ts-mocha": "^10.0.0",
     "typescript": "^5.5.4"
   }
