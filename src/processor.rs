@@ -11,19 +11,19 @@ use crate::{
 };
 
 pub fn process_instruction(
-    _program_id: &Pubkey,
-    _accounts: &[AccountInfo],
+    program_id: &Pubkey,
+    accounts: &[AccountInfo],
     instruction_data: &[u8],
 ) -> ProgramResult {
     let instruction: Result<SolAccountInstruction, Error> =
         SolAccountInstruction::try_from_slice(instruction_data);
 
     match instruction {
-        Ok(SolAccountInstruction::Initialize()) => initialize(),
+        Ok(SolAccountInstruction::Initialize()) => initialize(program_id, accounts),
 
-        Ok(SolAccountInstruction::DepositSol(amount)) => deposit(amount),
+        Ok(SolAccountInstruction::DepositSol(amount)) => deposit(program_id, accounts, amount),
 
-        Ok(SolAccountInstruction::WithdrawSol()) => withdraw(),
+        Ok(SolAccountInstruction::WithdrawSol()) => withdraw(program_id, accounts),
 
         Err(err) => {
             msg!("An error occured: {}", err);
