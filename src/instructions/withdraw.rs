@@ -19,7 +19,6 @@ pub fn withdraw(program_id: &Pubkey, accounts: &[AccountInfo]) -> ProgramResult 
         return Err(ProgramError::MissingRequiredSignature);
     }
 
-    // Derive PDA
     let (pda, _bump_seed) = Pubkey::find_program_address(
         &[PDA_SOL_ACCOUNT_SEED, user_account.key.as_ref()],
         program_id,
@@ -29,7 +28,6 @@ pub fn withdraw(program_id: &Pubkey, accounts: &[AccountInfo]) -> ProgramResult 
         return Err(ProgramError::InvalidArgument);
     }
 
-    // Check if PDA is owned by the program
     if sol_account.owner != program_id {
         return Err(ProgramError::IllegalOwner);
     }
@@ -40,7 +38,6 @@ pub fn withdraw(program_id: &Pubkey, accounts: &[AccountInfo]) -> ProgramResult 
         .checked_div(10)
         .ok_or(ProgramError::ArithmeticOverflow)?;
 
-    // Transfer 10% of PDA balance to user
     **sol_account.try_borrow_mut_lamports()? -= amount;
     **user_account.try_borrow_mut_lamports()? += amount;
 
