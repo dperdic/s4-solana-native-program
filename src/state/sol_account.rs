@@ -6,7 +6,7 @@ use solana_program::{
 };
 use std::mem::size_of;
 
-pub const PDA_SOL_ACCOUNT_SEED: &[u8] = b"sol_account";
+pub const PDA_SOL_ACCOUNT_SEED: &[u8; 11] = b"sol_account";
 
 #[derive(BorshSerialize, BorshDeserialize, Debug)]
 pub enum SolAccountInstruction {
