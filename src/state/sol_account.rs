@@ -4,14 +4,13 @@ use solana_program::{
     program_pack::{IsInitialized, Pack, Sealed},
     pubkey::Pubkey,
 };
-use std::mem::size_of;
 
 pub const PDA_SOL_ACCOUNT_SEED: &[u8; 11] = b"sol_account";
 
 #[derive(BorshSerialize, BorshDeserialize, Debug)]
 pub enum SolAccountInstruction {
     DepositSol(u64),
-    WithdrawSol(),
+    WithdrawSol,
 }
 
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -30,7 +29,7 @@ impl IsInitialized for SolAccount {
 }
 
 impl Pack for SolAccount {
-    const LEN: usize = size_of::<SolAccount>();
+    const LEN: usize = 1 + 32 + 8;
 
     fn unpack_from_slice(src: &[u8]) -> Result<Self, solana_program::program_error::ProgramError> {
         let is_initialized: bool = src[0] != 0;

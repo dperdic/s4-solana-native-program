@@ -16,6 +16,6 @@ pub fn process_instruction(
 
     match instruction {
         SolAccountInstruction::DepositSol(amount) => deposit(program_id, accounts, amount),
-        SolAccountInstruction::WithdrawSol() => withdraw(program_id, accounts),
+        SolAccountInstruction::WithdrawSol => withdraw(program_id, accounts),
     }
 }
