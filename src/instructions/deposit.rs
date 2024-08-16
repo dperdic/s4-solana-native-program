@@ -26,6 +26,10 @@ pub fn deposit(program_id: &Pubkey, accounts: &[AccountInfo], amount: u64) -> Pr
         return Err(ProgramError::InsufficientFunds);
     }
 
+    if !user_account.is_signer {
+        return Err(ProgramError::MissingRequiredSignature);
+    }
+
     let (pda, bump_seed) = Pubkey::find_program_address(
         &[PDA_SOL_ACCOUNT_SEED, user_account.key.as_ref()],
         program_id,
@@ -37,11 +41,6 @@ pub fn deposit(program_id: &Pubkey, accounts: &[AccountInfo], amount: u64) -> Pr
 
     // Initialize PDA if it doesn't exist
     if sol_account.data_is_empty() {
-        // Only initialize if the user is a signer, otherwise throw
-        if !user_account.is_signer {
-            return Err(ProgramError::MissingRequiredSignature);
-        }
-
         let rent: Rent = Rent::get()?;
         let required_lamports: u64 = rent.minimum_balance(SolAccount::LEN);
 
