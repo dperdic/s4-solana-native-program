@@ -28,6 +28,7 @@ pub fn deposit(program_id: &Pubkey, accounts: &[AccountInfo], amount: u64) -> Pr
         return Err(ProgramError::InsufficientFunds);
     }
 
+    // Derive PDA
     let (pda, bump_seed) = Pubkey::find_program_address(
         &[PDA_SOL_ACCOUNT_SEED, user_account.key.as_ref()],
         program_id,
@@ -59,6 +60,7 @@ pub fn deposit(program_id: &Pubkey, accounts: &[AccountInfo], amount: u64) -> Pr
         )?;
     }
 
+    // Transfer lamports from user's account to PDA
     let transfer_instruction: Instruction = transfer(user_account.key, sol_account.key, amount);
 
     invoke(
