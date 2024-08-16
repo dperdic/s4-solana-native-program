@@ -36,7 +36,7 @@ pub fn deposit(program_id: &Pubkey, accounts: &[AccountInfo], amount: u64) -> Pr
     );
 
     if sol_account.key != &pda {
-        return Err(ProgramError::InvalidArgument);
+        return Err(ProgramError::InvalidAccountData);
     }
 
     // Initialize PDA if it doesn't exist
