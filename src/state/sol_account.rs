@@ -1,9 +1,4 @@
 use borsh::{BorshDeserialize, BorshSerialize};
-use solana_program::{
-    program_error::ProgramError,
-    program_pack::{IsInitialized, Pack, Sealed},
-    pubkey::Pubkey,
-};
 
 pub const PDA_SOL_ACCOUNT_SEED: &[u8; 11] = b"sol_account";
 
@@ -11,51 +6,4 @@ pub const PDA_SOL_ACCOUNT_SEED: &[u8; 11] = b"sol_account";
 pub enum SolAccountInstruction {
     DepositSol(u64),
     WithdrawSol,
-}
-
-#[derive(Clone, Debug, Default, PartialEq)]
-pub struct SolAccount {
-    pub is_initialized: bool,
-    pub owner: Pubkey,
-    pub balance: u64,
-}
-
-impl Sealed for SolAccount {}
-
-impl IsInitialized for SolAccount {
-    fn is_initialized(&self) -> bool {
-        self.is_initialized
-    }
-}
-
-impl Pack for SolAccount {
-    const LEN: usize = 1 + 32 + 8;
-
-    fn unpack_from_slice(src: &[u8]) -> Result<Self, solana_program::program_error::ProgramError> {
-        let is_initialized: bool = src[0] != 0;
-
-        let owner: Pubkey = Pubkey::new_from_array(
-            src[1..33]
-                .try_into()
-                .map_err(|_| ProgramError::InvalidAccountData)?,
-        );
-
-        let balance: u64 = u64::from_be_bytes(
-            src[33..41]
-                .try_into()
-                .map_err(|_| ProgramError::InvalidAccountData)?,
-        );
-
-        Ok(SolAccount {
-            is_initialized,
-            owner,
-            balance,
-        })
-    }
-
-    fn pack_into_slice(&self, dst: &mut [u8]) {
-        dst[0] = self.is_initialized as u8;
-        dst[1..33].copy_from_slice(self.owner.as_ref());
-        dst[33..].copy_from_slice(&self.balance.to_be_bytes());
-    }
 }
