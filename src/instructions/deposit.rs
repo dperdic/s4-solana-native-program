@@ -39,8 +39,24 @@ pub fn deposit(program_id: &Pubkey, accounts: &[AccountInfo], amount: u64) -> Pr
         return Err(ProgramError::InvalidAccountData);
     }
 
+    let mut sol_data: SolAccount;
+
+    {
+        let sol_account_data: &mut RefMut<&mut [u8]> = &mut sol_account.try_borrow_mut_data()?;
+
+        sol_data = match SolAccount::unpack(&sol_account_data) {
+            Ok(data) => data,
+
+            Err(_) => SolAccount {
+                is_initialized: false,
+                owner: *user_account.key,
+                balance: 0,
+            },
+        };
+    }
+
     // Initialize PDA if it doesn't exist
-    if sol_account.data_is_empty() {
+    if !sol_data.is_initialized {
         let rent: Rent = Rent::get()?;
         let required_lamports: u64 = rent.minimum_balance(SolAccount::LEN);
 
@@ -66,17 +82,17 @@ pub fn deposit(program_id: &Pubkey, accounts: &[AccountInfo], amount: u64) -> Pr
             ]],
         )?;
 
-        let sol_account_data: &mut RefMut<&mut [u8]> = &mut sol_account.try_borrow_mut_data()?;
-
-        let sol_data: SolAccount = SolAccount {
+        sol_data = SolAccount {
             is_initialized: true,
             owner: *user_account.key,
             balance: 0,
         };
 
+        let sol_account_data: &mut RefMut<&mut [u8]> = &mut sol_account.try_borrow_mut_data()?;
+
         SolAccount::pack(sol_data, sol_account_data)?;
 
-        msg!("SOL account created and initialized");
+        msg!("Created and initialized PDA");
     }
 
     // Transfer lamports from user to PDA
@@ -98,7 +114,8 @@ pub fn deposit(program_id: &Pubkey, accounts: &[AccountInfo], amount: u64) -> Pr
 
     // Borrow and unpack PDA account data
     let sol_account_data: &mut RefMut<&mut [u8]> = &mut sol_account.try_borrow_mut_data()?;
-    let mut sol_data: SolAccount = SolAccount::unpack(&sol_account_data)?;
+
+    sol_data = SolAccount::unpack(&sol_account_data)?;
 
     // Update PDA balance
     sol_data.balance = sol_data

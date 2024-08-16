@@ -34,14 +34,17 @@ impl Pack for SolAccount {
     fn unpack_from_slice(src: &[u8]) -> Result<Self, solana_program::program_error::ProgramError> {
         let is_initialized: bool = src[0] != 0;
 
-        let owner_bytes: [u8; 32] =
-            <[u8; 32]>::try_from(&src[1..33]).map_err(|_| ProgramError::InvalidAccountData)?;
+        let owner: Pubkey = Pubkey::new_from_array(
+            src[1..33]
+                .try_into()
+                .map_err(|_| ProgramError::InvalidAccountData)?,
+        );
 
-        let balance_bytes: [u8; 8] =
-            <[u8; 8]>::try_from(&src[33..]).map_err(|_| ProgramError::InvalidAccountData)?;
-
-        let owner: Pubkey = Pubkey::new_from_array(owner_bytes);
-        let balance: u64 = u64::from_le_bytes(balance_bytes);
+        let balance: u64 = u64::from_be_bytes(
+            src[33..41]
+                .try_into()
+                .map_err(|_| ProgramError::InvalidAccountData)?,
+        );
 
         Ok(SolAccount {
             is_initialized,
