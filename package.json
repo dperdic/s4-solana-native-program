@@ -1,11 +1,13 @@
 {
+  "type": "module",
   "scripts": {
     "build": "cargo build-sbf",
-    "test": "yarn build && ts-mocha --recursive ./tests/*.ts",
-    "deploy": "dotenv -- zsh -c 'solana program deploy --url $RPC_URL target/sbf-solana-solana/release/s4_solana_native_program.so'"
+    "test": "ts-mocha -recursive tests/*.ts",
+    "deploy": "yarn build && dotenv -- zsh -c 'solana program deploy --url $RPC_URL target/sbf-solana-solana/release/s4_solana_native_program.so'"
   },
   "dependencies": {
-    "@solana/web3.js": "^1.95.2"
+    "@solana/web3.js": "^1.95.2",
+    "borsh": "^2.0.0"
   },
   "devDependencies": {
     "@types/bn.js": "^5.1.5",

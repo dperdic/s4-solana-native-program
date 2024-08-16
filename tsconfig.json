@@ -9,11 +9,14 @@
       "./node_modules/@types"
     ],
     "lib": [
-      "es2015",
-      "DOM"
+      "es2015"
     ],
-    "module": "commonjs",
-    "target": "es6",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "target": "ESNext",
     "esModuleInterop": true
-  }
+  },
+  "exclude": [
+    "node_modules"
+  ]
 }
