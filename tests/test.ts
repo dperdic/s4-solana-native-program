@@ -1,5 +1,6 @@
 import { serialize } from "borsh";
 import { Buffer } from "buffer";
+import { config } from "dotenv";
 import {
   Connection,
   Keypair,
@@ -14,13 +15,15 @@ import {
 } from "@solana/web3.js";
 import assert from "assert";
 
-const programId = new PublicKey("3UPWWCEfPsR6RWKufmq1TEDzGJQUpPh2aXi39FUgGK6S");
+config();
+
+const programId = new PublicKey("B2WsLnHt4Ap1tjpWijFuUVXx59Z9tdcRdv2FW3Cnnvd1");
 
 const PDA_VAULT_SEED = "sol_account";
 
 const userKeypair = Keypair.generate();
 
-const connection = new Connection("http://localhost:8899", {
+const connection = new Connection(process.env.RPC_URL, {
   commitment: "confirmed",
 });
 
@@ -31,10 +34,18 @@ describe("deposit and withdraw tests", () => {
       100 * LAMPORTS_PER_SOL
     );
 
-    const confirmation = await confirmTransaction(txHash);
+    try {
+      const confirmation = await confirmTransaction(txHash);
 
-    if (confirmation.value.err) {
-      throw confirmation.value.err;
+      if (confirmation.value.err) {
+        console.error(confirmation.value.err);
+
+        throw "airdrop failed";
+      }
+    } catch (error) {
+      console.error(error);
+
+      throw "airdrop failed";
     }
   });
 
@@ -82,7 +93,7 @@ describe("deposit and withdraw tests", () => {
 
     const pdaInfo = await connection.getAccountInfo(pda);
 
-    if (!pdaInfo) throw "no pda";
+    assert(pdaInfo !== null, "no pda");
 
     console.log(pdaInfo);
 
@@ -133,7 +144,7 @@ describe("deposit and withdraw tests", () => {
 
     const pdaInfo = await connection.getAccountInfo(pda);
 
-    if (!pdaInfo) throw "no pda";
+    assert(pdaInfo !== null, "no pda");
 
     console.log(pdaInfo);
 
@@ -182,7 +193,7 @@ describe("deposit and withdraw tests", () => {
 
     const pdaInfo = await connection.getAccountInfo(pda);
 
-    if (!pdaInfo) throw "no pda";
+    assert(pdaInfo !== null, "no pda");
 
     console.log(pdaInfo);
 
