@@ -6,4 +6,4 @@ Fourth assignment for the Solana Summer Fellowship 2024.
 
 This is a Solana native program that allows the user to deposit an amount of SOL into a PDA but the user can only withdraw 10% of the PDA balance.
 
-Live demo on devnet can be found [here.]("")
+Live demo on devnet can be found [here.]("https://explorer.solana.com/address/Ffjn4FqJee7jsfopqYCBXFAoEodj9iByVTksw9pMhzQ4?cluster=devnet")
