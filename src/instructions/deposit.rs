@@ -2,7 +2,7 @@ use solana_program::{
     account_info::{next_account_info, AccountInfo},
     entrypoint::ProgramResult,
     instruction::Instruction,
-    program::{invoke, invoke_signed},
+    program::invoke_signed,
     program_error::ProgramError,
     pubkey::Pubkey,
     rent::Rent,
@@ -63,13 +63,18 @@ pub fn deposit(program_id: &Pubkey, accounts: &[AccountInfo], amount: u64) -> Pr
     // Transfer lamports from user's account to PDA
     let transfer_instruction: Instruction = transfer(user_account.key, sol_account.key, amount);
 
-    invoke(
+    invoke_signed(
         &transfer_instruction,
         &[
             user_account.clone(),
             sol_account.clone(),
             system_program.clone(),
         ],
+        &[&[
+            PDA_SOL_ACCOUNT_SEED,
+            user_account.key.as_ref(),
+            &[bump_seed],
+        ]],
     )?;
 
     Ok(())
